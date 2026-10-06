@@ -88,7 +88,7 @@ if ingredients_list:
  
     # Show the SQL statement for testing
  
-    st.write(my_insert_stmt)
+  #  st.write(my_insert_stmt)
  
     # Submit Order button
  
