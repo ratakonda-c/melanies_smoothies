@@ -31,7 +31,7 @@ cnx = st.connection("snowflake")
 session = cnx.session()
 
 
-# Get the fruit options
+# Get the fruit options from Snowflake
 
 my_dataframe = session.table(
     "smoothies.public.fruit_options"
@@ -40,11 +40,19 @@ my_dataframe = session.table(
 )
 
 
+# Convert Snowflake DataFrame to Python list
+
+fruit_list = [
+    row["FRUIT_NAME"]
+    for row in my_dataframe.collect()
+]
+
+
 # Multiselect
 
 ingredients_list = st.multiselect(
     "Choose up to 5 ingredients:",
-    my_dataframe,
+    fruit_list,
     max_selections=5
 )
 
@@ -57,41 +65,51 @@ if ingredients_list:
 
     for fruit_chosen in ingredients_list:
 
-        ingredients_string += fruit_chosen + " "
+        ingredients_string = ingredients_string + fruit_chosen + " "
 
         # Display nutrition heading
-        st.subheader(fruit_chosen + " Nutrition Information")
+
+        st.subheader(
+            fruit_chosen + " Nutrition Information"
+        )
 
         # Get nutrition information from SmoothieFroot API
+
         smoothiefroot_response = requests.get(
-            "https://my.smoothiefroot.com/api/fruit/" + fruit_chosen
+            "https://my.smoothiefroot.com/api/fruit/"
+            + fruit_chosen
         )
 
         # Display nutrition information
+
         sf_df = st.dataframe(
             data=smoothiefroot_response.json(),
             use_container_width=True
         )
 
+
     # Display selected ingredients
+
     st.write(ingredients_string)
 
 
     # Create the INSERT statement
 
-    # my_insert_stmt = """
-    # INSERT INTO smoothies.public.orders
-    # (ingredients, name_on_order)
-    # VALUES ('""" + ingredients_string + """', '""" + name_on_order + """')
-    # """
+    my_insert_stmt = """
+    INSERT INTO smoothies.public.orders
+    (ingredients, name_on_order)
+    VALUES ('""" + ingredients_string + """', '""" + name_on_order + """')
+    """
+
 
     # Submit Order button
 
     time_to_insert = st.button("Submit Order")
 
+
     if time_to_insert:
 
-        # session.sql(my_insert_stmt).collect()
+        session.sql(my_insert_stmt).collect()
 
         st.success(
             "Your Smoothie is ordered!",
