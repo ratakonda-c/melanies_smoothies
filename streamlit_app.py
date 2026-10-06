@@ -76,7 +76,7 @@ if ingredients_list:
 
     # INGREDIENTS and NAME_ON_ORDER
  
-    my_insert_stmt = """
+    # my_insert_stmt = """
 
         INSERT INTO smoothies.public.orders
 
