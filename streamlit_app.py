@@ -84,7 +84,7 @@ if ingredients_list:
 
        # VALUES ('""" + ingredients_string + """', '""" + name_on_order + """')
 
-    """
+   # """
  
     # Show the SQL statement for testing
  
